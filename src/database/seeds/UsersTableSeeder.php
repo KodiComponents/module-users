@@ -26,7 +26,7 @@ class UsersTableSeeder extends Seeder
         $user = User::create([
             'email'    => 'admin@site.com',
             'password' => 'password',
-            'username' => 'admin',
+            'name' => 'admin',
             'locale'   => 'ru',
         ]);
 
@@ -35,7 +35,7 @@ class UsersTableSeeder extends Seeder
         $user = User::create([
             'email'    => 'admin_en@site.com',
             'password' => 'password',
-            'username' => 'admin_en',
+            'name' => 'admin_en',
             'locale'   => 'en',
         ]);
 
@@ -59,7 +59,7 @@ class UsersTableSeeder extends Seeder
             $user = User::create([
                 'email'    => $email,
                 'password' => 'password',
-                'username' => $username,
+                'name' => $username,
                 'locale'   => $faker->randomElement(['ru', 'en']),
             ]);
 

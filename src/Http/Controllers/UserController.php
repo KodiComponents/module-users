@@ -55,7 +55,7 @@ class UserController extends BackendController
         $permissions = $user->getAllowedPermissions();
 
         $this->setTitle(trans($this->wrapNamespace('core.title.profile_alternate'), [
-            'name' => ucfirst($user->username),
+            'name' => $user->getName(),
         ]));
 
         $this->setContent('users.profile', compact('user', 'roles', 'permissions'));
@@ -86,7 +86,7 @@ class UserController extends BackendController
 
         return $this->smartRedirect([$user])
             ->with('success', trans($this->wrapNamespace('core.messages.user.created'), [
-                'name' => $user->username,
+                'name' => $user->getName(),
             ]));
     }
 
@@ -98,7 +98,7 @@ class UserController extends BackendController
     {
         $user = $repository->findOrFail($id);
         $this->setTitle(trans($this->wrapNamespace('core.title.edit'), [
-            'name' => ucfirst($user->username),
+            'name' => $user->getName(),
         ]));
         $this->templateScripts['USER'] = $user;
 
@@ -119,7 +119,7 @@ class UserController extends BackendController
 
         return $this->smartRedirect([$user])
             ->with('success', trans($this->wrapNamespace('core.messages.user.updated'), [
-                'name' => $user->username,
+                'name' => $user->getName(),
             ]));
     }
 
@@ -135,7 +135,7 @@ class UserController extends BackendController
 
         return $this->smartRedirect()
             ->with('success', trans($this->wrapNamespace('core.messages.user.deleted'), [
-                'name' => $user->username,
+                'name' => $user->getName(),
             ]));
     }
 }

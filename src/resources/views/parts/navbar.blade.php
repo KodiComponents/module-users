@@ -2,14 +2,14 @@
 <li class="dropdown user-menu">
 	<a href="#" class="dropdown-toggle user-menu" data-toggle="dropdown">
 		{!! $currentUser->getAvatar(25) !!}
-		<span>{{ $currentUser->username }}</span>
+		<span>{{ $currentUser->getName() }}</span>
 	</a>
 
 	<ul class="dropdown-menu">
 		<li class="user-header">
 			{!! $currentUser->getAvatar(90, ['class' => 'img-circle']) !!}
 			<p>
-				{{ $currentUser->username }}
+				{{ $currentUser->getName() }}
 				<small>{{ $currentUser->email }}</small>
 			</p>
 		</li>

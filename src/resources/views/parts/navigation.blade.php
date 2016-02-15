@@ -2,7 +2,7 @@
 <div class="menu-content top animated fadeIn" id="main-menu-profile">
 	<div>
 		<div class="text-bg">
-			<span class="text-semibold">{{ $currentUser->username }}</span>
+			<span class="text-semibold">{{ $currentUser->getName() }}</span>
 		</div>
 
 		{!! $currentUser->getAvatar(50) !!}

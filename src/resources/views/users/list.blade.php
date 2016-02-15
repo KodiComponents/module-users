@@ -30,7 +30,7 @@
 		<tr class="item">
 			<td class="name">
 				{!! $user->getAvatar(20, ['class' => 'img-circle']) !!}
-				{!! link_to_route('backend.user.profile', $user->username, [$user]) !!}
+				{!! link_to_route('backend.user.profile', $user->getName(), [$user]) !!}
 			</td>
 			<td class="email hidden-xs">{!! UI::label(HTML::mailto($user->email)) !!}</td>
 			<td class="roles hidden-xs">

@@ -8,7 +8,7 @@
 
 
 				<div class="profile-full-name">
-					<span class="text-semibold">{{ $user->username }}</span>
+					<span class="text-semibold">{{ $user->getName() }}</span>
 				</div>
 
 				<span class="text-muted">@lang('users::core.field.last_login') {{ $user->last_login }}</span>
