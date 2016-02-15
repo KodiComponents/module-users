@@ -32,6 +32,11 @@ class ModuleServiceProvider extends ServiceProvider
 
     public function register()
     {
+        config()->set('auth.providers.users', [
+            'driver' => 'eloquent',
+            'model'  => \KodiCMS\Users\Model\User::class,
+        ]);
+
         $this->registerAliases([
             'ACL'      => ACL::class,
             'Reflinks' => Reflinks::class,

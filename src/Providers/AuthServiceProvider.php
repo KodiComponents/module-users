@@ -3,7 +3,10 @@
 namespace KodiCMS\Users\Providers;
 
 use KodiCMS\Users\ACL;
+use KodiCMS\Users\Http\Middleware\RedirectIfAuthenticated;
 use KodiCMS\Users\Model\User;
+use Illuminate\Routing\Router;
+use KodiCMS\Users\Http\Middleware\Authenticate;
 use Illuminate\Contracts\Auth\Access\Gate as GateContract;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -20,11 +23,13 @@ class AuthServiceProvider extends ServiceProvider
      * Register any application authentication / authorization services.
      *
      * @param  \Illuminate\Contracts\Auth\Access\Gate $gate
-     *
-     * @return void
+     * @param Router                                  $router
      */
-    public function boot(GateContract $gate)
+    public function boot(GateContract $gate, Router $router)
     {
+        $router->middleware('backend.auth', Authenticate::class);
+        $router->middleware('backend.guest', RedirectIfAuthenticated::class);
+
         parent::registerPolicies($gate);
 
         $this->app['config']->set('auth.model', User::class);
