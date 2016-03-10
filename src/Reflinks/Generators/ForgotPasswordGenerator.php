@@ -72,10 +72,10 @@ class ForgotPasswordGenerator implements ReflinkGeneratorInterface
     public function tokenGenerated(UserReflink $reflink)
     {
         Bus::dispatch(new EmailSend('user_request_password', [
-            'code'     => $reflink->token,
-            'username' => $reflink->user->username,
-            'email'    => $reflink->user->email,
-            'reflink'  => $reflink->linkToken(),
+            'code'    => $reflink->token,
+            'name'    => $reflink->user->name,
+            'email'   => $reflink->user->email,
+            'reflink' => $reflink->linkToken(),
         ]));
     }
 }

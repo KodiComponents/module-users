@@ -18,7 +18,7 @@
 		</colgroup>
 		<thead>
 		<tr>
-			<th>@lang('users::core.field.username')</th>
+			<th>@lang('users::core.field.name')</th>
 			<th class="hidden-xs">@lang('users::core.field.email')</th>
 			<th class="hidden-xs">@lang('users::core.field.roles')</th>
 			<th class="hidden-xs">@lang('users::core.field.last_login')</th>

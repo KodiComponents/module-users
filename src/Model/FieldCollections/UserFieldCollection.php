@@ -18,10 +18,10 @@ class UserFieldCollection implements ModelFieldsInterface
     public function fields()
     {
         return [
-            // Username
-            (new TextField('username'))->setTitle(trans('users::core.field.username'))->setSettings([
+            // Name
+            (new TextField('name'))->setTitle(trans('users::core.field.name'))->setSettings([
                 'append'   => UI::icon('user'),
-                'helpText' => trans('users::core.rule.username', ['num' => 3]),
+                'helpText' => trans('users::core.rule.name', ['num' => 3]),
             ])->group(function ($group) {
                 $group->setSizeLg();
             }),

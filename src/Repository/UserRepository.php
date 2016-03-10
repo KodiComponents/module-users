@@ -36,7 +36,7 @@ class UserRepository extends BaseRepository
         $validator = $this->validator($data, [
             'email'    => 'required|email|max:255|unique:users',
             'password' => 'required|confirmed|min:6',
-            'username' => 'required|max:255|min:3|unique:users',
+            'name'     => 'required|max:255|min:3|unique:users',
         ]);
 
         return $this->_validate($validator);
@@ -52,8 +52,8 @@ class UserRepository extends BaseRepository
     public function validateOnUpdate($id, array $data = [])
     {
         $validator = $this->validator($data, [
-            'email'    => "required|email|max:255|unique:users,email,{$id}",
-            'username' => "required|max:255|min:3|unique:users,username,{$id}",
+            'email' => "required|email|max:255|unique:users,email,{$id}",
+            'name'  => "required|max:255|min:3|unique:users,name,{$id}",
         ]);
 
         $validator->sometimes('password', 'required|confirmed|min:6', function ($input) {
@@ -71,7 +71,7 @@ class UserRepository extends BaseRepository
     public function create(array $data = [])
     {
         $user = parent::create(array_only($data, [
-            'username',
+            'name',
             'password',
             'email',
             'locale',
@@ -97,7 +97,7 @@ class UserRepository extends BaseRepository
         }
 
         $user = parent::update($id, array_only($data, [
-            'username',
+            'name',
             'password',
             'email',
             'locale',

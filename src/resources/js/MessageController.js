@@ -8,7 +8,7 @@ CMS.controllers.add('message.get.create', function(){
 			data: function(query, pageNumber, context) {
 				return {
 					query: query,
-					in: ['username', 'email']
+					in: ['name', 'email']
 				}
 			},
 			dataType: 'json',
@@ -18,7 +18,7 @@ CMS.controllers.add('message.get.create', function(){
 					for(i in resp.content) {
 						users.push({
 							id: resp.content[i]['id'],
-							text: resp.content[i]['username']
+							text: resp.content[i]['name']
 						});
 					}
 				}

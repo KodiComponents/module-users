@@ -33,7 +33,7 @@ class UserController extends APIController
     public function getLike()
     {
         $query = $this->getRequiredParameter('query');
-        $in = (array) $this->getParameter('in', ['username']);
+        $in = (array) $this->getParameter('in', ['name']);
 
         $users = User::select();
 

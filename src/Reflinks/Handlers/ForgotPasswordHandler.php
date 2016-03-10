@@ -57,7 +57,7 @@ class ForgotPasswordHandler implements ReflinkHandlerInterface
 
         Bus::dispatch(new EmailSend('user_new_password', [
             'password' => $password,
-            'username' => $user->username,
+            'name'     => $user->name,
             'email'    => $user->email,
         ]));
 

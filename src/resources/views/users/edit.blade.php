@@ -6,7 +6,7 @@
 	<span class="panel-title">@lang('users::core.tab.general')</span>
 </div>
 <div class="panel-body">
-	{!! $user->renderField('username') !!}
+	{!! $user->renderField('name') !!}
 
 	{!! $user->renderField('email') !!}
 
