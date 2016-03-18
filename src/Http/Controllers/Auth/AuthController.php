@@ -2,6 +2,7 @@
 
 namespace KodiCMS\Users\Http\Controllers\Auth;
 
+use KodiCMS\Users\Model\User;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use KodiCMS\CMS\Http\Controllers\System\FrontendController;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
@@ -28,6 +29,20 @@ class AuthController extends FrontendController
     public function redirectPath()
     {
         return backend_url_segment();
+    }
+
+    /**
+     * @param \Request $request
+     * @param User $user
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function authenticated($request, $user)
+    {
+        $user->updateLastLogin();
+        $user->authenticated();
+
+        return redirect()->intended($this->redirectPath());
     }
 
     public function initMiddleware()

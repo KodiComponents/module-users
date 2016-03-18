@@ -95,6 +95,10 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      */
     public function getLastLoginAttribute($date)
     {
+        if (empty($date)) {
+            return trans('users::core.messages.auth.never');
+        }
+
         return (new Carbon())->createFromTimestamp($date)->diffForHumans();
     }
 
@@ -287,5 +291,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     public function authenticated()
     {
         $this->fireModelEvent('authenticated');
+    }
+
+    public function updateLastLogin()
+    {
+        $this->last_login = time();
+        $this->save();
     }
 }
