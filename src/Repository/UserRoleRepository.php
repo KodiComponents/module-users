@@ -2,15 +2,15 @@
 
 namespace KodiCMS\Users\Repository;
 
-use KodiCMS\Users\Model\UserRole;
+use KodiCMS\Users\Model\Role;
 use KodiCMS\CMS\Repository\BaseRepository;
 
 class UserRoleRepository extends BaseRepository
 {
     /**
-     * @param UserRole $model
+     * @param Role $model
      */
-    public function __construct(UserRole $model)
+    public function __construct(Role $model)
     {
         parent::__construct($model);
     }
@@ -43,10 +43,6 @@ class UserRoleRepository extends BaseRepository
             'name' => "required|max:32|unique:roles,name,{$id}",
         ]);
 
-        $validator->sometimes('password', 'required|confirmed|min:6', function ($input) {
-            return ! empty($input->password);
-        });
-
         return $this->_validate($validator);
     }
 
@@ -59,13 +55,10 @@ class UserRoleRepository extends BaseRepository
     {
         $role = parent::create(array_only($data, [
             'name',
-            'description',
+            'label',
         ]));
 
-        if (isset($data['permissions'])) {
-            $permissions = (array) $data['permissions'];
-            $role->attachPermissions($permissions);
-        }
+        $role->syncPermissions((array) array_get($data, 'permissions'));
 
         return $role;
     }
@@ -80,16 +73,11 @@ class UserRoleRepository extends BaseRepository
     {
         $role = parent::update($id, array_only($data, [
             'name',
-            'description',
+            'label',
         ]));
 
         if ($role->id > 2) {
-            $permissions = [];
-            if (isset($data['permissions'])) {
-                $permissions = (array) $data['permissions'];
-            }
-
-            $role->attachPermissions($permissions);
+            $role->syncPermissions((array) array_get($data, 'permissions'));
         }
 
         return $role;

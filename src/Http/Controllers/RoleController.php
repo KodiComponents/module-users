@@ -2,7 +2,7 @@
 
 namespace KodiCMS\Users\Http\Controllers;
 
-use ACL;
+use KodiCMS\Users\Model\Permission;
 use KodiCMS\Users\Repository\UserRoleRepository;
 use KodiCMS\CMS\Http\Controllers\System\BackendController;
 
@@ -25,7 +25,10 @@ class RoleController extends BackendController
         $role = $repository->instance();
         $this->setTitle(trans($this->wrapNamespace('role.title.create')));
 
-        $permissions = ACL::getPermissionsList();
+        $permissions = Permission::get()->groupBy('module_label')->transform(function($modules) {
+            return $modules->groupBy('group_label');
+        });
+
         $this->setContent('roles.create', compact('role', 'permissions'));
     }
 
@@ -57,8 +60,11 @@ class RoleController extends BackendController
             'name' => ucfirst($role->name),
         ]));
 
-        $permissions = ACL::getPermissionsList();
-        $selectedPermissions = $role->permissions()->lists('action')->all();
+        $permissions = Permission::get()->groupBy('module_label')->transform(function($modules) {
+            return $modules->groupBy('group_label');
+        });
+        
+        $selectedPermissions = $role->permissions->pluck('id')->all();
 
         $users = $role->users()->with('roles')->paginate();
         $this->setContent('roles.edit', compact('role', 'permissions', 'selectedPermissions', 'users'));

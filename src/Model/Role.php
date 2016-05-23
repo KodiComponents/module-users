@@ -4,7 +4,7 @@ namespace KodiCMS\Users\Model;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UserRole extends Model
+class Role extends Model
 {
     /**
      * The database table used by the model.
@@ -27,7 +27,7 @@ class UserRole extends Model
      */
     protected $casts = [
         'name'        => 'string',
-        'description' => 'string',
+        'label' => 'string',
     ];
 
     /**
@@ -35,7 +35,7 @@ class UserRole extends Model
      *
      * @var array
      */
-    protected $fillable = ['name', 'description'];
+    protected $fillable = ['name', 'label'];
 
     /**
      * @param string $name
@@ -44,31 +44,35 @@ class UserRole extends Model
     {
         $this->attributes['name'] = str_slug($name);
     }
-
     /**
-     * Получение прав для роли.
-     * @return array
+     * A role may be given various permissions.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function permissions()
     {
-        return $this->hasMany(RolePermission::class, 'role_id');
+        return $this->belongsToMany(Permission::class);
     }
 
-    public function attachPermissions(array $permissionsList = [])
+    /**
+     * Grant the given permission to a role.
+     *
+     * @param  Permission $permission
+     * @return mixed
+     */
+    public function givePermissionTo(Permission $permission)
     {
-        $this->permissions()->delete();
+        return $this->permissions()->save($permission);
+    }
 
-        if (count($permissionsList) > 0) {
-            $permissions = [];
-
-            foreach (array_keys($permissionsList) as $action) {
-                $permissions[] = new RolePermission(['action' => $action]);
-            }
-
-            $this->permissions()->saveMany($permissions);
-        }
-
-        return $this;
+    /**
+     * @param array $permissions
+     *
+     * @return array
+     */
+    public function syncPermissions(array $permissions)
+    {
+        return $this->permissions()->sync($permissions);
     }
 
     /**
@@ -76,6 +80,6 @@ class UserRole extends Model
      */
     public function users()
     {
-        return $this->belongsToMany(User::class, 'roles_users', 'role_id');
+        return $this->belongsToMany(User::class);
     }
 }

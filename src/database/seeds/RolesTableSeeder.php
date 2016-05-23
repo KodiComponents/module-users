@@ -3,7 +3,8 @@
 namespace KodiCMS\Users\database\seeds;
 
 use Illuminate\Database\Seeder;
-use KodiCMS\Users\Model\UserRole;
+use KodiCMS\Users\Model\Permission;
+use KodiCMS\Users\Model\Role;
 
 class RolesTableSeeder extends Seeder
 {
@@ -14,25 +15,26 @@ class RolesTableSeeder extends Seeder
      */
     public function run()
     {
-        UserRole::truncate();
+        Role::truncate();
+        Permission::truncate();
 
         $roles = [
             [
-                'name'        => 'login',
-                'description' => 'Login privileges, granted after account confirmation.',
+                'name' => 'login',
+                'label' => 'Login privileges, granted after account confirmation.',
             ],
             [
-                'name'        => 'administrator',
-                'description' => 'Administrative user, has access to everything.',
+                'name' => 'administrator',
+                'label' => 'Administrative user, has access to everything.',
             ],
             [
-                'name'        => 'developer',
-                'description' => '',
+                'name' => 'developer',
+                'label' => '',
             ],
         ];
 
         foreach ($roles as $data) {
-            UserRole::create($data);
+            Role::create($data);
         }
     }
 }

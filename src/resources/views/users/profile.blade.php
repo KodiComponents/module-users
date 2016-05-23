@@ -27,20 +27,27 @@
 			<div class="profile-content panel tabbable">
 				@event('view.user.profile.information', [$user->id])
 
-				@if (!empty($permissions) and acl_check('users.view.permissions'))
+				@if (!empty($permissions) and Gate::allows('user::view_permissions'))
 				<div class="panel-heading">
 					<span class="panel-title" data-icon="wheelchair">@lang('users::core.title.permissions')</span>
 				</div>
 				<div class="panel-body no-padding tabbable">
-					@foreach($permissions as $section => $actions)
+					@foreach($permissions as $module => $groups)
 					<div class="panel-heading">
-						<span class="panel-title">{{ ucfirst($section) }}</span>
+						<span class="panel-title">{{ $module }}</span>
 					</div>
+
+					@foreach($groups as $title => $actions)
 					<ul class="list-group no-margin-b">
-						@foreach($actions as $action => $description)
-						<li class="list-group-item" data-icon="check text-success">{{ $description }}</li>
+						@if(!empty($title))
+						<li class="list-group-item disabled">{{ $title }}</li>
+						@endif
+
+						@foreach($actions as $action)
+						<li class="list-group-item" data-icon="check text-success">{{ $action->label }}</li>
 						@endforeach
 					</ul>
+					@endforeach
 					@endforeach
 				</div>
 				@endif

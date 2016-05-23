@@ -1,14 +1,11 @@
 <?php
 
-use KodiCMS\Users\Model\User;
-
 /**
  * @param string|array $action
- * @param User         $user
  *
  * @return bool
  */
-function acl_check($action, User $user = null)
+function acl_check($action)
 {
-    return ACL::check($action, $user);
+    return Gate::allows($action);
 }

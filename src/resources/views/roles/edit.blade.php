@@ -19,8 +19,8 @@
 	<div class="form-group">
 		<label class="control-label col-md-3" for="description">@lang('users::role.field.description')</label>
 		<div class="col-md-9">
-			{!! Form::textarea('description', NULL, [
-				'class' => 'form-control', 'id' => 'description', 'rows' => 2
+			{!! Form::textarea('label', NULL, [
+				'class' => 'form-control', 'id' => 'label', 'rows' => 2
 			]) !!}
 		</div>
 	</div>
@@ -41,4 +41,6 @@
 <div class="panel-heading">
 	<span class="panel-title">@lang('users::core.title.list')</span>
 </div>
+
+
 @include('users::users.list', ['users' => $users])

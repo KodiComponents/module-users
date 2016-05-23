@@ -52,7 +52,10 @@ class UserController extends BackendController
     {
         $user = $repository->findOrFail($id ?: $this->currentUser->id);
         $roles = $user->roles;
-        $permissions = $user->getAllowedPermissions();
+
+        $permissions = $user->permissions()->groupBy('module_label')->transform(function($modules) {
+            return $modules->groupBy('group_label');
+        });
 
         $this->setTitle(trans($this->wrapNamespace('core.title.profile_alternate'), [
             'name' => $user->getName(),

@@ -8,7 +8,7 @@ namespace KodiCMS\Users\Observers;
 class RoleObserver
 {
     /**
-     * @param \KodiCMS\Users\Model\UserRole $role
+     * @param \KodiCMS\Users\Model\Role $role
      *
      * @return bool
      */

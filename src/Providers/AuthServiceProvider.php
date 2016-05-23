@@ -2,8 +2,8 @@
 
 namespace KodiCMS\Users\Providers;
 
-use KodiCMS\Users\ACL;
 use KodiCMS\Users\Http\Middleware\RedirectIfAuthenticated;
+use KodiCMS\Users\Model\Permission;
 use KodiCMS\Users\Model\User;
 use Illuminate\Routing\Router;
 use KodiCMS\Users\Http\Middleware\Authenticate;
@@ -20,6 +20,30 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [];
 
     /**
+     * {@inheritdoc}
+     */
+    public function register()
+    {
+        Permission::register('users', 'user', [
+            'list',
+            'create',
+            'edit',
+            'view_permissions',
+            'change_roles',
+            'change_password',
+            'delete',
+        ]);
+
+        Permission::register('users', 'role', [
+            'list',
+            'create',
+            'edit',
+            'change_permissions',
+            'delete',
+        ]);
+    }
+
+    /**
      * Register any application authentication / authorization services.
      *
      * @param  \Illuminate\Contracts\Auth\Access\Gate $gate
@@ -34,8 +58,34 @@ class AuthServiceProvider extends ServiceProvider
 
         $this->app['config']->set('auth.model', User::class);
 
-        $this->app->singleton('acl', function () use ($gate) {
-            return new ACL(config('permissions', []), $gate);
+        $gate->before(function (User $user, $ability) {
+            \Profiler::append('Requested permissions', $ability, 0);
+
+            if ($user->hasRole('administrator')) {
+                return true;
+            }
         });
+
+        if (\Schema::hasTable('permissions')) {
+            // Dynamically register permissions with Laravel's Gate.
+            foreach ($this->getPermissions() as $permission) {
+                $gate->define($permission->key, function (User $user) use ($permission) {
+                    return $user->hasPermission($permission);
+                });
+            }
+        }
+    }
+
+    /**
+     * Fetch the collection of site permissions.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    protected function getPermissions()
+    {
+        $permissions = Permission::with('roles')->get();
+
+        Permission::syncPermissions($permissions);
+        return $permissions;
     }
 }

@@ -3,8 +3,8 @@
 namespace KodiCMS\Users\Model;
 
 use App;
-use ACL;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use KodiCMS\Support\Helpers\Locale;
 use KodiCMS\Users\Helpers\Gravatar;
 use Illuminate\Auth\Authenticatable;
@@ -24,11 +24,6 @@ use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract, AuthorizableContract
 {
     use Authenticatable, CanResetPassword, ModelFieldTrait, Authorizable, Tentacle;
-
-    /**
-     * @var array
-     */
-    private static $loadedUserRoles = [];
 
     /**
      * The database table used by the model.
@@ -60,16 +55,6 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         'logins'     => 'integer',
         'last_login' => 'integer',
     ];
-
-    /**
-     * @var array
-     */
-    protected $roles = [];
-
-    /**
-     * @var array
-     */
-    protected $permissions = [];
 
     /**
      * @param array $attributes
@@ -171,105 +156,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function roles()
-    {
-        return $this->belongsToMany(UserRole::class, 'roles_users', 'user_id', 'role_id');
-    }
-
-    /**
      * @return \Illuminate\Database\Eloquent\Relations\hasMany
      */
     public function reflinks()
     {
         return $this->hasMany(UserReflink::class);
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public function getRoles()
-    {
-        if (array_key_exists($this->id, static::$loadedUserRoles)) {
-            return static::$loadedUserRoles[$this->id];
-        }
-
-        $roles = $this->roles()->get();
-        static::$loadedUserRoles[$this->id] = $roles;
-
-        return $roles;
-    }
-
-    /**
-     * @param string|array $role
-     * @param bool         $allRequired
-     *
-     * @return bool
-     */
-    public function hasRole($role, $allRequired = false)
-    {
-        $roles = $this->getRoles()->lists('name')->all();
-
-        if (is_array($role)) {
-            $status = (bool) $allRequired;
-
-            foreach ($role as $_role) {
-                // If the user doesn't have the role
-                if (! in_array($_role, $roles)) {
-                    // Set the status false and get outta here
-                    $status = false;
-
-                    if ($allRequired) {
-                        break;
-                    }
-                } elseif (! $allRequired) {
-                    $status = true;
-                    break;
-                }
-            }
-        } else {
-            $status = in_array($role, $roles);
-        }
-
-        return $status;
-    }
-
-    /**
-     * @return array
-     */
-    public function getPermissionsByRoles()
-    {
-        $roles = $this->getRoles()->lists('name', 'id')->all();
-
-        if (! empty($roles)) {
-            $permissions = RolePermission::whereIn('role_id', array_keys($roles))
-                ->get()
-                ->lists('action')
-                ->all();
-
-            return array_unique($permissions);
-        }
-
-        return [];
-    }
-
-    /**
-     * @return array
-     */
-    public function getAllowedPermissions()
-    {
-        $permissions = [];
-
-        foreach (ACL::getPermissionsList() as $sectionTitle => $actions) {
-            foreach ($actions as $action => $title) {
-                if (acl_check($action, $this)) {
-                    $permissions[$sectionTitle][$action] = $title;
-                }
-            }
-        }
-
-        return $permissions;
     }
 
     /**
@@ -297,5 +188,67 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     {
         $this->last_login = time();
         $this->save();
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function permissions()
+    {
+        $permissions = new Collection();
+
+        foreach ($this->roles()->with('permissions')->get() as $role) {
+            $permissions = $permissions->merge($role->permissions);
+        }
+
+        return $permissions;
+    }
+
+
+    /**
+     * Assign the given role to the user.
+     *
+     * @param  string $role
+     * @return mixed
+     */
+    public function assignRole($role)
+    {
+        return $this->roles()->save(
+            Role::whereName($role)->firstOrFail()
+        );
+    }
+
+    /**
+     * Determine if the user has the given role.
+     *
+     * @param  mixed $role
+     * @return boolean
+     */
+    public function hasRole($role)
+    {
+        if (is_string($role)) {
+            return $this->roles->contains('name', $role);
+        }
+
+        return !! $role->intersect($this->roles)->count();
+    }
+
+    /**
+     * Determine if the user may perform the given permission.
+     *
+     * @param  Permission $permission
+     * @return boolean
+     */
+    public function hasPermission(Permission $permission)
+    {
+        return $this->hasRole($permission->roles);
     }
 }

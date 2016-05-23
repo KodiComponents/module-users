@@ -4,8 +4,7 @@ namespace KodiCMS\Users\Providers;
 
 use Event;
 use KodiCMS\Users\Model\User;
-use KodiCMS\Users\Facades\ACL;
-use KodiCMS\Users\Model\UserRole;
+use KodiCMS\Users\Model\Role;
 use KodiCMS\Support\ServiceProvider;
 use KodiCMS\Users\Facades\Reflinks;
 use KodiCMS\Users\Observers\RoleObserver;
@@ -19,7 +18,7 @@ class ModuleServiceProvider extends ServiceProvider
     public function boot()
     {
         User::observe(new UserObserver);
-        UserRole::observe(new RoleObserver);
+        Role::observe(new RoleObserver);
 
         Event::listen('view.navbar.right.after', function () {
             echo view('users::parts.navbar')->render();
@@ -38,7 +37,6 @@ class ModuleServiceProvider extends ServiceProvider
         ]);
 
         $this->registerAliases([
-            'ACL'      => ACL::class,
             'Reflinks' => Reflinks::class,
         ]);
 

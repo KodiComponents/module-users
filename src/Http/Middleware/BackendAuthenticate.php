@@ -18,11 +18,6 @@ class BackendAuthenticate
     protected $auth;
 
     /**
-     * @var ControllerACL
-     */
-    protected $acl;
-
-    /**
      * Create a new filter instance.
      *
      * @param  Guard $auth Services
@@ -30,9 +25,6 @@ class BackendAuthenticate
     public function __construct(Guard $auth)
     {
         $this->auth = $auth;
-        $this->acl = app('acl.controller');
-
-        $this->acl->setLoginPath(backend_url('auth/login'));
     }
 
     /**
@@ -46,20 +38,17 @@ class BackendAuthenticate
     public function handle(Request $request, Closure $next)
     {
         if (auth()->guest()) {
+
             return $this->acl->denyAccess(trans('users::core.messages.auth.unauthorized'), true);
         }
 
         if (! auth()->user()->hasRole('login')) {
             auth()->logout();
-
-            return $this->acl->denyAccess(trans('users::core.messages.auth.deny_access'), true);
         }
 
         $locale = auth()->user()->getLocale();
         Carbon::setLocale($locale);
         Lang::setLocale($locale);
-
-        $this->acl->checkPermissions();
 
         return $next($request);
     }

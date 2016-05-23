@@ -4,7 +4,7 @@ namespace KodiCMS\Users\database\seeds;
 
 use KodiCMS\Users\Model\User;
 use Illuminate\Database\Seeder;
-use KodiCMS\Users\Model\UserRole;
+use KodiCMS\Users\Model\Role;
 
 class UsersTableSeeder extends Seeder
 {
@@ -17,8 +17,8 @@ class UsersTableSeeder extends Seeder
     {
         User::truncate();
 
-        $roles = UserRole::get()->lists('id')->all();
-        $maxRolesToAtach = count($roles) > 4 ? 4 : count($roles);
+        $roles = Role::get()->lists('id')->all();
+        $maxRolesToAttach = count($roles) > 4 ? 4 : count($roles);
 
         $faker = \Faker\Factory::create();
         $totalUsers = 5;
@@ -63,7 +63,7 @@ class UsersTableSeeder extends Seeder
                 'locale'   => $faker->randomElement(['ru', 'en']),
             ]);
 
-            $user->roles()->attach($faker->randomElements($roles, rand(1, $maxRolesToAtach)));
+            $user->roles()->attach($faker->randomElements($roles, rand(1, $maxRolesToAttach)));
         }
     }
 }
