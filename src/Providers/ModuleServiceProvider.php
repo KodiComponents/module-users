@@ -27,6 +27,8 @@ class ModuleServiceProvider extends ServiceProvider
         Event::listen('view.menu', function ($navigation) {
             echo view('users::parts.navigation')->render();
         }, 999);
+
+        $this->registerNavigation();
     }
 
     public function register()
@@ -71,5 +73,29 @@ class ModuleServiceProvider extends ServiceProvider
 
             return new ReflinkTokenRepository($key, $expire);
         });
+    }
+
+    private function registerNavigation()
+    {
+        $navigation = \Navigation::getPages()->findById('system');
+
+        $navigation->setFromArray([
+            [
+                'id' => 'users',
+                'title' => 'users::core.title.list',
+                'url' => route('backend.user.list'),
+                'permissions' => 'users.index',
+                'priority' => 200,
+                'icon' => 'user',
+            ],
+            [
+                'id' => 'roles',
+                'title' => 'users::role.title.list',
+                'url' => route('backend.role.list'),
+                'permissions' => 'roles.index',
+                'priority' => 300,
+                'icon' => 'group',
+            ],
+        ]);
     }
 }

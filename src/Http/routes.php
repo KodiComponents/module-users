@@ -1,5 +1,13 @@
 <?php
 
+Route::group(['prefix' => backend_url_segment(), 'as' => 'backend.', 'middleware' => ['web']], function () {
+    Route::controller('auth', 'Auth\AuthController', [
+        'getLogin'  => 'auth.login',
+        'getLogout' => 'auth.logout',
+        'postLogin' => 'auth.login.post',
+    ]);
+});
+
 Route::group(['prefix' => backend_url_segment(), 'as' => 'backend.', 'middleware' => ['web', 'backend.auth']], function () {
     Route::get('user/{id}/edit', ['as' => 'user.edit', 'uses' => 'UserController@getEdit'])->where('id', '[0-9]+');
     Route::post('user/{id}/edit', [
@@ -36,12 +44,6 @@ Route::group(['prefix' => backend_url_segment(), 'as' => 'backend.', 'middleware
         'getIndex'   => 'role.list',
         'getCreate'  => 'role.create',
         'postCreate' => 'role.create.post',
-    ]);
-
-    Route::controller('auth', 'Auth\AuthController', [
-        'getLogin'  => 'auth.login',
-        'getLogout' => 'auth.logout',
-        'postLogin' => 'auth.login.post',
     ]);
 
     Route::controller('password', 'Auth\PasswordController', [
