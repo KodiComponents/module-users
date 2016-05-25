@@ -16,6 +16,7 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
         User::truncate();
+        \DB::table('user_meta')->truncate();
 
         $roles = Role::get()->lists('id')->all();
         $maxRolesToAttach = count($roles) > 4 ? 4 : count($roles);

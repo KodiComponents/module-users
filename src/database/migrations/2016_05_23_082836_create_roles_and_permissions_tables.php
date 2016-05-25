@@ -37,21 +37,20 @@ class CreateRolesAndPermissionsTables extends Migration
             $table->primary(['permission_id', 'role_id']);
         });
 
-        Schema::create('role_user', function (Blueprint $table) {
-            $table->unsignedInteger('role_id');
-            $table->unsignedInteger('user_id');
+        Schema::table('roles_users', function (Blueprint $table) {
+            $table->rename('role_user');
+        });
 
+        Schema::table('role_user', function (Blueprint $table) {
             $table->foreign('role_id')
-                ->references('id')
-                ->on('roles')
-                ->onDelete('cascade');
+                  ->references('id')
+                  ->on('roles')
+                  ->onDelete('cascade');
 
             $table->foreign('user_id')
-                ->references('id')
-                ->on('users')
-                ->onDelete('cascade');
-
-            $table->primary(['role_id', 'user_id']);
+                  ->references('id')
+                  ->on('backend_users')
+                  ->onDelete('cascade');
         });
     }
 

@@ -13,7 +13,6 @@ class DropOldRolesPermissions extends Migration
     public function up()
     {
         Schema::dropIfExists('roles_permissions');
-        Schema::dropIfExists('roles_users');
     }
 
     /**
