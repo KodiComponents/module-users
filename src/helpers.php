@@ -7,5 +7,5 @@
  */
 function acl_check($action)
 {
-    return Gate::allows($action);
+    return BackendGate::allows($action);
 }

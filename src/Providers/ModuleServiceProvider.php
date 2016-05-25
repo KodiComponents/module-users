@@ -3,18 +3,21 @@
 namespace KodiCMS\Users\Providers;
 
 use Event;
-use KodiCMS\Users\Model\User;
-use KodiCMS\Users\Model\Role;
 use KodiCMS\Support\ServiceProvider;
+use KodiCMS\Users\Console\Commands\DeleteExpiredReflinksCommand;
+use KodiCMS\Users\Facades\BackendGate;
 use KodiCMS\Users\Facades\Reflinks;
+use KodiCMS\Users\Model\Permission;
+use KodiCMS\Users\Model\Role;
+use KodiCMS\Users\Model\User;
 use KodiCMS\Users\Observers\RoleObserver;
 use KodiCMS\Users\Observers\UserObserver;
 use KodiCMS\Users\Reflinks\ReflinksBroker;
 use KodiCMS\Users\Reflinks\ReflinkTokenRepository;
-use KodiCMS\Users\Console\Commands\DeleteExpiredReflinksCommand;
 
 class ModuleServiceProvider extends ServiceProvider
 {
+
     public function boot()
     {
         User::observe(new UserObserver);
@@ -28,18 +31,14 @@ class ModuleServiceProvider extends ServiceProvider
             echo view('users::parts.navigation')->render();
         }, 999);
 
-        $this->registerNavigation();
+        $this->registerPermissions();
     }
 
     public function register()
     {
-        config()->set('auth.providers.users', [
-            'driver' => 'eloquent',
-            'model'  => \KodiCMS\Users\Model\User::class,
-        ]);
-
         $this->registerAliases([
             'Reflinks' => Reflinks::class,
+            'BackendGate' => BackendGate::class,
         ]);
 
         $this->registerReflinksBroker();
@@ -68,15 +67,18 @@ class ModuleServiceProvider extends ServiceProvider
     protected function registerTokenRepository()
     {
         $this->app->singleton('reflink.tokens', function ($app) {
-            $key = $app['config']['app.key'];
+            $key    = $app['config']['app.key'];
             $expire = 60;
 
             return new ReflinkTokenRepository($key, $expire);
         });
     }
 
-    private function registerNavigation()
+    public function contextBackend()
     {
+        $this->registerGatePermissions();
+        $this->extendBladeTags();
+
         $navigation = \Navigation::getPages()->findById('system');
 
         $navigation->setFromArray([
@@ -97,5 +99,78 @@ class ModuleServiceProvider extends ServiceProvider
                 'icon' => 'group',
             ],
         ]);
+    }
+
+    private function registerPermissions()
+    {
+        Permission::register('users', 'user', [
+            'list',
+            'create',
+            'edit',
+            'view_permissions',
+            'change_roles',
+            'change_password',
+            'delete',
+        ]);
+
+        Permission::register('users', 'role', [
+            'list',
+            'create',
+            'edit',
+            'change_permissions',
+            'delete',
+        ]);
+    }
+
+    private function registerGatePermissions()
+    {
+        $gate = app('backend.gate');
+
+        $gate->before(function (User $user, $ability) {
+            \Profiler::append('Requested permissions', $ability, 0);
+
+            if ($user->hasRole('administrator')) {
+                return true;
+            }
+        });
+
+        // Dynamically register permissions with Laravel's Gate.
+        foreach ($this->getPermissions() as $permission) {
+            $gate->define($permission->key, function (User $user) use ($permission) {
+                return $user->hasPermission($permission);
+            });
+        }
+    }
+
+    /**
+     * Fetch the collection of site permissions.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    protected function getPermissions()
+    {
+        $permissions = Permission::with('roles')->get();
+
+        Permission::syncPermissions($permissions);
+        return $permissions;
+    }
+
+    private function extendBladeTags()
+    {
+        \Blade::directive('can', function ($expression) {
+            return "<?php if (app('backend.gate')->check{$expression}): ?>";
+        });
+
+        \Blade::directive('elsecan', function ($expression) {
+            return "<?php elseif (app('backend.gate')->check{$expression}): ?>";
+        });
+
+        \Blade::directive('cannot', function ($expression) {
+            return "<?php if (app('backend.gate')->denies{$expression}): ?>";
+        });
+
+        \Blade::directive('elsecannot', function ($expression) {
+            return "<?php elseif (app('backend.gate')->denies{$expression}): ?>";
+        });
     }
 }

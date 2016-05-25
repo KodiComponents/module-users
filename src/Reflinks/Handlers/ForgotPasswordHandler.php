@@ -64,7 +64,7 @@ class ForgotPasswordHandler implements ReflinkHandlerInterface
         $user->password = $password;
         $user->save();
 
-        Auth::login($user);
+        backend_auth()->login($user);
 
         $this->redirectUrl = backend_url();
 

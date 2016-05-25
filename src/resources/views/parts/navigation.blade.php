@@ -1,4 +1,4 @@
-@if(Auth::check())
+@if(backend_auth()->check())
 <div class="menu-content top animated fadeIn" id="main-menu-profile">
 	<div>
 		<div class="text-bg">
@@ -11,7 +11,7 @@
 				'data-icon' => 'user',
 				'class' => 'btn btn-xs btn-primary btn-outline dark'
 			]) !!}
-			{!! HTML::linkRoute('backend.user.edit', '', [Auth::user()], [
+			{!! HTML::linkRoute('backend.user.edit', '', [backend_auth()->user()], [
 				'data-icon' => 'cog',
 				'class' => 'btn btn-xs btn-warning btn-outline dark'
 			]) !!}

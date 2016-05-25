@@ -15,7 +15,7 @@
 
 				<hr />
 
-				@if (acl_check('users.edit') or $user->id == auth()->id)
+				@if (acl_check('users.edit') or $user->id == backend_auth()->id())
 				{!! link_to_route('backend.user.edit', trans('users::core.button.edit'), [$user], [
 					'class' => 'btn btn-success btn-labeled',
 					'data-icon' => 'user'
@@ -27,27 +27,27 @@
 			<div class="profile-content panel tabbable">
 				@event('view.user.profile.information', [$user->id])
 
-				@if (!empty($permissions) and Gate::allows('user::view_permissions'))
+				@if (!empty($permissions) and BackendGate::allows('user::view_permissions'))
 				<div class="panel-heading">
 					<span class="panel-title" data-icon="wheelchair">@lang('users::core.title.permissions')</span>
 				</div>
 				<div class="panel-body no-padding tabbable">
 					@foreach($permissions as $module => $groups)
-					<div class="panel-heading">
-						<span class="panel-title">{{ $module }}</span>
-					</div>
+						<div class="panel-heading">
+							<span class="panel-title">{{ $module }}</span>
+						</div>
 
-					@foreach($groups as $title => $actions)
-					<ul class="list-group no-margin-b">
-						@if(!empty($title))
-						<li class="list-group-item disabled">{{ $title }}</li>
-						@endif
+						@foreach($groups as $title => $actions)
+						<ul class="list-group no-margin-b">
+							@if(!empty($title))
+							<li class="list-group-item disabled">{{ $title }}</li>
+							@endif
 
-						@foreach($actions as $action)
-						<li class="list-group-item" data-icon="check text-success">{{ $action->label }}</li>
+							@foreach($actions as $action)
+							<li class="list-group-item" data-icon="check text-success">{{ $action->label }}</li>
+							@endforeach
+						</ul>
 						@endforeach
-					</ul>
-					@endforeach
 					@endforeach
 				</div>
 				@endif

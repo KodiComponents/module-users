@@ -22,6 +22,11 @@ class AuthController extends FrontendController
     use AuthenticatesAndRegistersUsers, ThrottlesLogins;
 
     /**
+     * @var string
+     */
+    public $guard = 'backend';
+
+    /**
      * Get the post register / login redirect path.
      *
      * @return string

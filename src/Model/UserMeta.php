@@ -176,7 +176,7 @@ class UserMeta
     protected static function getUser($userId = null)
     {
         if ($userId === null) {
-            return Auth::user()->id;
+            return backend_auth()->id();
         }
 
         if ($userId instanceof User) {

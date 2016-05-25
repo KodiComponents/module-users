@@ -22,7 +22,7 @@ class UserController extends BackendController
     {
         parent::boot();
 
-        if (auth()->check()) {
+        if ($this->currentUser) {
             // Разрешение пользователю править свой профиль
             $action = $this->getCurrentAction();
             if (in_array($action, [

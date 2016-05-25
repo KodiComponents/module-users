@@ -1,4 +1,4 @@
-@if(Auth::check())
+@if(backend_auth()->check())
 <li class="dropdown user-menu">
 	<a href="#" class="dropdown-toggle user-menu" data-toggle="dropdown">
 		{!! $currentUser->getAvatar(25) !!}
@@ -18,7 +18,7 @@
 				{!! HTML::linkRoute('backend.user.current_profile', trans('users::core.title.profile'), [], ['data-icon' => 'user']) !!}
 			</div>
 			<div class="col-xs-6">
-				{!! HTML::linkRoute('backend.user.edit', trans('users::core.title.settings'), [Auth::user()], ['data-icon' => 'cog']) !!}
+				{!! HTML::linkRoute('backend.user.edit', trans('users::core.title.settings'), [backend_auth()->user()], ['data-icon' => 'cog']) !!}
 			</div>
 		</li>
 		<li class="user-footer">
