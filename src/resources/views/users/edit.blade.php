@@ -33,7 +33,7 @@
 </div>
 @endif
 
-@if (acl_check('users.change_roles') and ($user->id > 1))
+@if (BackendGate::allows('users.change_roles') and ($user->id > 1))
 <div class="panel-heading">
 	<span class="panel-title">@lang('users::core.tab.roles')</span>
 </div>

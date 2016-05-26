@@ -2,9 +2,9 @@
 
 namespace KodiCMS\Users\Http\Controllers;
 
-use Reflinks;
-use KodiCMS\Users\Contracts\ReflinkHandlerInterface;
 use KodiCMS\CMS\Http\Controllers\System\FrontendController;
+use KodiCMS\Users\Contracts\ReflinkHandlerInterface;
+use Reflinks;
 
 class ReflinkController extends FrontendController
 {
@@ -47,7 +47,6 @@ class ReflinkController extends FrontendController
 
     public function complete()
     {
-        $this->setContent('reflinks.complete')
-            ->with('message', $this->session->get('message'));
+        $this->setContent('reflinks.complete')->with('message', $this->session->get('message'));
     }
 }
