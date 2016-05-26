@@ -14,11 +14,25 @@ class UserReflink extends Model
     protected $table = 'user_reflinks';
 
     /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+
+    /**
+     * The primary key for the model.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'token';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['token', 'handler', 'properties', 'user_id'];
+    protected $fillable = ['handler', 'properties', 'user_id'];
 
     /**
      * The attributes that should be casted to native types.
@@ -26,9 +40,9 @@ class UserReflink extends Model
      * @var array
      */
     protected $casts = [
-        'user_id'    => 'integer',
-        'handler'    => 'string',
-        'token'      => 'string',
+        'user_id' => 'integer',
+        'handler' => 'string',
+        'token' => 'string',
         'properties' => 'json',
     ];
 
