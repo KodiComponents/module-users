@@ -2,8 +2,9 @@
 
 namespace KodiCMS\Users\Repository;
 
-use KodiCMS\Users\Model\Role;
+use Illuminate\Http\Request;
 use KodiCMS\CMS\Repository\BaseRepository;
+use KodiCMS\Users\Model\Role;
 
 class UserRoleRepository extends BaseRepository
 {
@@ -16,34 +17,36 @@ class UserRoleRepository extends BaseRepository
     }
 
     /**
-     * @param array $data
-     *
-     * @return bool
-     * @throws \KodiCMS\CMS\Exceptions\ValidationException
+     * @{@inheritdoc}
      */
-    public function validateOnCreate(array $data = [])
+    public function validationAttributes()
     {
-        $validator = $this->validator($data, [
-            'name' => 'required|max:32|unique:roles',
-        ]);
-
-        return $this->_validate($validator);
+        return trans('users::role.field');
     }
 
     /**
-     * @param int $id
-     * @param array   $data
-     *
-     * @return bool
-     * @throws \KodiCMS\CMS\Exceptions\ValidationException
+     * @param Request $request
      */
-    public function validateOnUpdate($id, array $data = [])
+    public function validateOnCreate(Request $request)
     {
-        $validator = $this->validator($data, [
-            'name' => "required|max:32|unique:roles,name,{$id}",
-        ]);
+        $rolesTable = $this->model->getTable();
 
-        return $this->_validate($validator);
+        $this->validate($request, [
+            'name' => "required|max:32|unique:{$rolesTable},name",
+        ]);
+    }
+
+    /**
+     * @param int     $id
+     * @param Request $request
+     */
+    public function validateOnUpdate($id, Request $request)
+    {
+        $rolesTable = $this->model->getTable();
+
+        $this->validate($request, [
+            'name' => "required|max:32|unique:{$rolesTable},name,{$id}",
+        ]);
     }
 
     /**
@@ -53,10 +56,7 @@ class UserRoleRepository extends BaseRepository
      */
     public function create(array $data = [])
     {
-        $role = parent::create(array_only($data, [
-            'name',
-            'label',
-        ]));
+        $role = parent::create($data);
 
         $role->syncPermissions((array) array_get($data, 'permissions'));
 
@@ -71,10 +71,7 @@ class UserRoleRepository extends BaseRepository
      */
     public function update($id, array $data = [])
     {
-        $role = parent::update($id, array_only($data, [
-            'name',
-            'label',
-        ]));
+        $role = parent::update($id, $data);
 
         if ($role->id > 2) {
             $role->syncPermissions((array) array_get($data, 'permissions'));

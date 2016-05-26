@@ -26,7 +26,7 @@ class Role extends Model
      * @var array
      */
     protected $casts = [
-        'name'        => 'string',
+        'name' => 'string',
         'label' => 'string',
     ];
 
@@ -44,6 +44,7 @@ class Role extends Model
     {
         $this->attributes['name'] = str_slug($name);
     }
+
     /**
      * A role may be given various permissions.
      *
@@ -58,6 +59,7 @@ class Role extends Model
      * Grant the given permission to a role.
      *
      * @param  Permission $permission
+     *
      * @return mixed
      */
     public function givePermissionTo(Permission $permission)

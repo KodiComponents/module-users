@@ -2,6 +2,7 @@
 
 namespace KodiCMS\Users\Http\Controllers;
 
+use KodiCMS\Users\Model\User;
 use KodiCMS\Users\Repository\UserRepository;
 use KodiCMS\CMS\Http\Controllers\System\BackendController;
 
@@ -50,6 +51,7 @@ class UserController extends BackendController
      */
     public function getProfile(UserRepository $repository, $id = null)
     {
+        /** @var User $user */
         $user = $repository->findOrFail($id ?: $this->currentUser->id);
         $roles = $user->roles;
 
@@ -83,9 +85,10 @@ class UserController extends BackendController
      */
     public function postCreate(UserRepository $repository)
     {
-        $data = $this->request->all();
-        $repository->validateOnCreate($data);
-        $user = $repository->create($data);
+        $repository->validateOnCreate($this->request);
+
+        /** @var User $user */
+        $user = $repository->create($this->request->all());
 
         return $this->smartRedirect([$user])
             ->with('success', trans($this->wrapNamespace('core.messages.user.created'), [
@@ -99,10 +102,13 @@ class UserController extends BackendController
      */
     public function getEdit(UserRepository $repository, $id)
     {
+        /** @var User $user */
         $user = $repository->findOrFail($id);
+
         $this->setTitle(trans($this->wrapNamespace('core.title.edit'), [
             'name' => $user->getName(),
         ]));
+
         $this->templateScripts['USER'] = $user;
 
         $this->setContent('users.edit', compact('user'));
@@ -116,9 +122,10 @@ class UserController extends BackendController
      */
     public function postEdit(UserRepository $repository, $id)
     {
-        $data = $this->request->all();
-        $repository->validateOnUpdate($id, $data);
-        $user = $repository->update($id, $data);
+        $repository->validateOnUpdate($id, $this->request);
+
+        /** @var User $user */
+        $user = $repository->update($id, $this->request->all());
 
         return $this->smartRedirect([$user])
             ->with('success', trans($this->wrapNamespace('core.messages.user.updated'), [
@@ -134,6 +141,7 @@ class UserController extends BackendController
      */
     public function postDelete(UserRepository $repository, $id)
     {
+        /** @var User $user */
         $user = $repository->delete($id);
 
         return $this->smartRedirect()

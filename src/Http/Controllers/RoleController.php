@@ -2,9 +2,10 @@
 
 namespace KodiCMS\Users\Http\Controllers;
 
-use KodiCMS\Users\Model\Permission;
-use KodiCMS\Users\Repository\UserRoleRepository;
 use KodiCMS\CMS\Http\Controllers\System\BackendController;
+use KodiCMS\Users\Model\Permission;
+use KodiCMS\Users\Model\Role;
+use KodiCMS\Users\Repository\UserRoleRepository;
 
 class RoleController extends BackendController
 {
@@ -39,9 +40,10 @@ class RoleController extends BackendController
      */
     public function postCreate(UserRoleRepository $repository)
     {
-        $data = $this->request->all();
-        $repository->validateOnCreate($data);
-        $role = $repository->create($data);
+        $repository->validateOnCreate($this->request);
+
+        /** @var Role $role */
+        $role = $repository->create($this->request->all());
 
         return $this->smartRedirect([$role])
             ->with('success', trans($this->wrapNamespace('role.messages.created'), [
@@ -55,6 +57,7 @@ class RoleController extends BackendController
      */
     public function getEdit(UserRoleRepository $repository, $id)
     {
+        /** @var Role $role */
         $role = $repository->findOrFail($id);
         $this->setTitle(trans($this->wrapNamespace('role.title.edit'), [
             'name' => ucfirst($role->name),
@@ -78,9 +81,10 @@ class RoleController extends BackendController
      */
     public function postEdit(UserRoleRepository $repository, $id)
     {
-        $data = $this->request->all();
-        $repository->validateOnUpdate($id, $data);
-        $role = $repository->update($id, $data);
+        $repository->validateOnUpdate($id, $this->request);
+
+        /** @var Role $role */
+        $role = $repository->update($id, $this->request->all());
 
         return $this->smartRedirect([$role])
             ->with('success', trans($this->wrapNamespace('role.messages.updated'), [
@@ -96,6 +100,7 @@ class RoleController extends BackendController
      */
     public function postDelete(UserRoleRepository $repository, $id)
     {
+        /** @var Role $role */
         $role = $repository->delete($id);
 
         return $this->smartRedirect()

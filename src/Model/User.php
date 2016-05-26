@@ -4,19 +4,19 @@ namespace KodiCMS\Users\Model;
 
 use App;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
-use KodiCMS\Support\Helpers\Locale;
-use KodiCMS\Users\Helpers\Gravatar;
 use Illuminate\Auth\Authenticatable;
-use KodiCMS\Support\Traits\Tentacle;
-use Illuminate\Database\Eloquent\Model;
-use KodiCMS\Support\Model\ModelFieldTrait;
 use Illuminate\Auth\Passwords\CanResetPassword;
-use Illuminate\Foundation\Auth\Access\Authorizable;
-use KodiCMS\Users\Model\FieldCollections\UserFieldCollection;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\Access\Authorizable;
+use KodiCMS\Support\Helpers\Locale;
+use KodiCMS\Support\Model\ModelFieldTrait;
+use KodiCMS\Support\Traits\Tentacle;
+use KodiCMS\Users\Helpers\Gravatar;
+use KodiCMS\Users\Model\FieldCollections\UserFieldCollection;
 
 /**
  * Class User.
@@ -31,6 +31,18 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      * @var string
      */
     protected $table = 'backend_users';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'name',
+        'password',
+        'email',
+        'locale',
+    ];
 
     /**
      * The attributes that aren't mass assignable.
@@ -52,7 +64,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      * @var array
      */
     protected $casts = [
-        'logins'     => 'integer',
+        'logins' => 'integer',
         'last_login' => 'integer',
     ];
 
@@ -136,9 +148,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     /**
      * Получение аватара пользлователя из сервиса Gravatar.
      *
-     * @param int $size
-     * @param string  $default
-     * @param array   $attributes
+     * @param int    $size
+     * @param string $default
+     * @param array  $attributes
      *
      * @return string HTML::image
      */
@@ -152,7 +164,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      */
     public function setPasswordAttribute($password)
     {
-        $this->attributes['password'] = bcrypt($password);
+        if (! empty($password)) {
+            $this->attributes['password'] = bcrypt($password);
+        }
     }
 
     /**
@@ -212,24 +226,23 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         return $permissions;
     }
 
-
     /**
      * Assign the given role to the user.
      *
      * @param  string $role
+     *
      * @return mixed
      */
     public function assignRole($role)
     {
-        return $this->roles()->save(
-            Role::whereName($role)->firstOrFail()
-        );
+        return $this->roles()->save(Role::whereName($role)->firstOrFail());
     }
 
     /**
      * Determine if the user has the given role.
      *
      * @param  mixed $role
+     *
      * @return boolean
      */
     public function hasRole($role)
@@ -238,13 +251,18 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
             return $this->roles->contains('name', $role);
         }
 
-        return !! $role->intersect($this->roles)->count();
+        if (is_array($role)) {
+            return array_intersect($role, $this->roles->pluck('name')->all());
+        }
+
+        return ! ! $role->intersect($this->roles)->count();
     }
 
     /**
      * Determine if the user may perform the given permission.
      *
      * @param  Permission $permission
+     *
      * @return boolean
      */
     public function hasPermission(Permission $permission)

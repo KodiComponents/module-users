@@ -2,6 +2,7 @@
 
 namespace KodiCMS\Users\Repository;
 
+use Illuminate\Http\Request;
 use KodiCMS\CMS\Repository\BaseRepository;
 use KodiCMS\Users\Model\User;
 
@@ -16,6 +17,14 @@ class UserRepository extends BaseRepository
     }
 
     /**
+     * @{@inheritdoc}
+     */
+    public function validationAttributes()
+    {
+        return trans('users::core.field');
+    }
+
+    /**
      * @param int|null $perPage
      *
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
@@ -26,41 +35,37 @@ class UserRepository extends BaseRepository
     }
 
     /**
-     * @param array $data
-     *
-     * @return bool
-     * @throws \KodiCMS\CMS\Exceptions\ValidationException
+     * @param Request $request
      */
-    public function validateOnCreate(array $data = [])
+    public function validateOnCreate(Request $request)
     {
-        $validator = $this->validator($data, [
-            'email'    => 'required|email|max:255|unique:users',
-            'password' => 'required|confirmed|min:6',
-            'name'     => 'required|max:255|min:3|unique:users',
-        ]);
+        $usersTable = $this->model->getTable();
 
-        return $this->_validate($validator);
+        $this->validate($request, [
+            'email' => "required|email|max:255|unique:{$usersTable}",
+            'password' => 'required|confirmed|min:6',
+            'name' => 'required|max:255|min:3',
+        ]);
     }
 
     /**
-     * @param int $id
-     * @param array   $data
-     *
-     * @return bool
-     * @throws \KodiCMS\CMS\Exceptions\ValidationException
+     * @param int     $id
+     * @param Request $request
      */
-    public function validateOnUpdate($id, array $data = [])
+    public function validateOnUpdate($id, Request $request)
     {
-        $validator = $this->validator($data, [
-            'email' => "required|email|max:255|unique:users,email,{$id}",
-            'name'  => "required|max:255|min:3|unique:users,name,{$id}",
+        $usersTable = $this->model->getTable();
+
+        $validator = $this->getValidationFactory()->make($request->all(), [
+            'email' => "required|email|max:255|unique:{$usersTable},email,{$id}",
+            'name' => "required|max:255|min:3",
         ]);
 
         $validator->sometimes('password', 'required|confirmed|min:6', function ($input) {
             return ! empty($input->password);
         });
 
-        return $this->_validate($validator);
+        $this->validateWith($validator, $request);
     }
 
     /**
@@ -70,16 +75,10 @@ class UserRepository extends BaseRepository
      */
     public function create(array $data = [])
     {
-        $user = parent::create(array_only($data, [
-            'name',
-            'password',
-            'email',
-            'locale',
-        ]));
+        /** @var User $user */
+        $user = parent::create($data);
 
-        if (isset($data['roles'])) {
-            $user->roles()->attach((array) $data['roles']);
-        }
+        $user->roles()->attach((array) array_get($data, 'roles', []));
 
         return $user;
     }
@@ -92,10 +91,6 @@ class UserRepository extends BaseRepository
      */
     public function update($id, array $data = [])
     {
-        if (array_key_exists('password', $data) and empty($data['password'])) {
-            unset($data['password']);
-        }
-
         $user = parent::update($id, array_only($data, [
             'name',
             'password',
@@ -103,8 +98,8 @@ class UserRepository extends BaseRepository
             'locale',
         ]));
 
-        if (isset($data['roles'])) {
-            $user->roles()->sync((array) $data['roles']);
+        if ($user->id > 1) {
+            $user->roles()->sync((array) array_get($data, 'roles', []));
         }
 
         return $user;
