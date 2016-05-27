@@ -1,6 +1,6 @@
 <div class="panel">
 	<div class="panel-heading">
-		@if (acl_check('roles.add'))
+		@if (acl_check('role::create'))
 			{!! link_to_route('backend.role.create', trans('users::role.button.create'), [], [
 			'class' => 'btn btn-primary btn-labeled', 'data-icon' => 'plus', 'data-hotkeys' => 'ctrl+a'
 			]) !!}
@@ -25,7 +25,7 @@
 		@foreach ($roles as $role)
 		<tr class="item">
 			<td class="name">
-				@if (acl_check('roles.edit'))
+				@if (acl_check('role::edit'))
 					{!! link_to_route('backend.role.edit', $role->name, [$role], [
 						'data-icon' => 'unlock'
 					]) !!}
@@ -37,7 +37,7 @@
 				{{ $role->description }}
 			</td>
 			<td class="actions text-right">
-				@if ($role->id > 2 and acl_check('roles.delete'))
+				@if ($role->id > 2 and acl_check('role::delete'))
 				{!! Form::open(['route' => ['backend.role.delete', $role]]) !!}
 					{!! Form::button('', [
 						'type' => 'submit',

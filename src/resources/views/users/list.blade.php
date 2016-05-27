@@ -1,6 +1,6 @@
 <div class="panel">
 	<div class="panel-heading">
-		@if (acl_check('users.add'))
+		@if (acl_check('user::create'))
 		{!! link_to_route('backend.user.create', trans('users::core.button.create'), [], [
 			'class' => 'btn btn-primary btn-labeled', 'data-icon' => 'plus', 'data-hotkeys' => 'ctrl+a'
 		]) !!}
@@ -40,7 +40,7 @@
 			</td>
 			<td class="last_login hidden-xs">{{ $user->last_login }}</td>
 			<td class="actions text-right">
-				@if ($user->id > 1 and acl_check('users.delete'))
+				@if ($user->id > 1 and acl_check('user::delete'))
 				{!! Form::open(['route' => ['backend.user.delete', $user]]) !!}
 					{!! Form::button('', [
 						'type' => 'submit',

@@ -15,7 +15,7 @@
 	{!! $user->renderField('locale') !!}
 </div>
 
-@if (acl_check('users.change_password') or $user->id == backend_auth()->id())
+@if (acl_check('user::change_password') or $user->id == backend_auth()->id())
 <div class="panel-heading">
 	<span class="panel-title">@lang('users::core.tab.password')</span>
 </div>

@@ -15,7 +15,7 @@
 
 				<hr />
 
-				@if (acl_check('users.edit') or $user->id == backend_auth()->id())
+				@if (acl_check('user::edit') or $user->id == backend_auth()->id())
 				{!! link_to_route('backend.user.edit', trans('users::core.button.edit'), [$user], [
 					'class' => 'btn btn-success btn-labeled',
 					'data-icon' => 'user'
