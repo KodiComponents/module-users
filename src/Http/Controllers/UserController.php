@@ -2,6 +2,8 @@
 
 namespace KodiCMS\Users\Http\Controllers;
 
+use KodiCMS\Users\Http\Forms\CreateUserForm;
+use KodiCMS\Users\Http\Forms\UpdateUserForm;
 use KodiCMS\Users\Model\User;
 use KodiCMS\Users\Repository\UserRepository;
 use KodiCMS\CMS\Http\Controllers\System\BackendController;
@@ -79,20 +81,17 @@ class UserController extends BackendController
     }
 
     /**
-     * @param UserRepository $repository
+     * @param CreateUserForm $userForm
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postCreate(UserRepository $repository)
+    public function postCreate(CreateUserForm $userForm)
     {
-        $repository->validateOnCreate($this->request);
-
-        /** @var User $user */
-        $user = $repository->create($this->request->all());
+        $user = $userForm->save();
 
         return $this->smartRedirect([$user])
             ->with('success', trans($this->wrapNamespace('core.messages.user.created'), [
-                'name' => $user->getName(),
+                'name' => $user->name,
             ]));
     }
 
@@ -115,21 +114,18 @@ class UserController extends BackendController
     }
 
     /**
-     * @param UserRepository $repository
-     * @param int            $id
+     * @param UpdateUserForm $userForm
+     * @param int $id
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postEdit(UserRepository $repository, $id)
+    public function postEdit(UpdateUserForm $userForm, $id)
     {
-        $repository->validateOnUpdate($id, $this->request);
-
-        /** @var User $user */
-        $user = $repository->update($id, $this->request->all());
+        $user = $userForm->save();
 
         return $this->smartRedirect([$user])
             ->with('success', trans($this->wrapNamespace('core.messages.user.updated'), [
-                'name' => $user->getName(),
+                'name' => $user->name,
             ]));
     }
 

@@ -35,40 +35,6 @@ class UserRepository extends BaseRepository
     }
 
     /**
-     * @param Request $request
-     */
-    public function validateOnCreate(Request $request)
-    {
-        $usersTable = $this->model->getTable();
-
-        $this->validate($request, [
-            'email' => "required|email|max:255|unique:{$usersTable}",
-            'password' => 'required|confirmed|min:6',
-            'name' => 'required|max:255|min:3',
-        ]);
-    }
-
-    /**
-     * @param int     $id
-     * @param Request $request
-     */
-    public function validateOnUpdate($id, Request $request)
-    {
-        $usersTable = $this->model->getTable();
-
-        $validator = $this->getValidationFactory()->make($request->all(), [
-            'email' => "required|email|max:255|unique:{$usersTable},email,{$id}",
-            'name' => "required|max:255|min:3",
-        ]);
-
-        $validator->sometimes('password', 'required|confirmed|min:6', function ($input) {
-            return ! empty($input->password);
-        });
-
-        $this->validateWith($validator, $request);
-    }
-
-    /**
      * @param array $data
      *
      * @return \Illuminate\Database\Eloquent\Model

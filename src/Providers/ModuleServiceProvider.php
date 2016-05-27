@@ -5,15 +5,11 @@ namespace KodiCMS\Users\Providers;
 use Event;
 use KodiCMS\Support\ServiceProvider;
 use KodiCMS\Users\Console\Commands\DeleteExpiredReflinksCommand;
-use KodiCMS\Users\Facades\BackendGate;
-use KodiCMS\Users\Facades\Reflinks;
 use KodiCMS\Users\Model\Permission;
 use KodiCMS\Users\Model\Role;
 use KodiCMS\Users\Model\User;
 use KodiCMS\Users\Observers\RoleObserver;
 use KodiCMS\Users\Observers\UserObserver;
-use KodiCMS\Users\Reflinks\ReflinksBroker;
-use KodiCMS\Users\Reflinks\ReflinkTokenRepository;
 
 class ModuleServiceProvider extends ServiceProvider
 {
@@ -37,8 +33,8 @@ class ModuleServiceProvider extends ServiceProvider
     public function register()
     {
         $this->registerAliases([
-            'Reflinks' => Reflinks::class,
-            'BackendGate' => BackendGate::class,
+            'Reflinks' => \KodiCMS\Users\Facades\Reflinks::class,
+            'BackendGate' => \KodiCMS\Users\Facades\BackendGate::class,
         ]);
 
         $this->registerReflinksBroker();
@@ -56,7 +52,7 @@ class ModuleServiceProvider extends ServiceProvider
         $this->app->singleton('reflinks', function ($app) {
             $tokens = $app['reflink.tokens'];
 
-            return new ReflinksBroker($tokens);
+            return new \KodiCMS\Users\Reflinks\ReflinksBroker($tokens);
         });
     }
 
@@ -70,7 +66,7 @@ class ModuleServiceProvider extends ServiceProvider
             $key    = $app['config']['app.key'];
             $expire = 60;
 
-            return new ReflinkTokenRepository($key, $expire);
+            return new \KodiCMS\Users\Reflinks\ReflinkTokenRepository($key, $expire);
         });
     }
 
