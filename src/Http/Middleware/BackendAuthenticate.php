@@ -20,7 +20,9 @@ class BackendAuthenticate
      */
     public function handle($request, Closure $next)
     {
-        $auth = Auth::guard('backend');
+        Auth::setDefaultDriver('backend');
+
+        $auth = Auth::guard();
 
         if ($auth->guest()) {
             if ($request->ajax() || $request->wantsJson()) {

@@ -68,3 +68,6 @@
 	@include('cms::app.partials.actionButtons', ['route' => 'backend.user.list'])
 </div>
 {!! Form::close() !!}
+
+
+@event('view.user.edit.footer', [$user])

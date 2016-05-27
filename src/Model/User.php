@@ -12,6 +12,8 @@ use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\Authorizable;
+use KodiCMS\API\Contracts\Tokenable;
+use KodiCMS\API\Traits\HasApiTokens;
 use KodiCMS\Support\Helpers\Locale;
 use KodiCMS\Support\Model\ModelFieldTrait;
 use KodiCMS\Support\Traits\Tentacle;
@@ -21,9 +23,9 @@ use KodiCMS\Users\Model\FieldCollections\UserFieldCollection;
 /**
  * Class User.
  */
-class User extends Model implements AuthenticatableContract, CanResetPasswordContract, AuthorizableContract
+class User extends Model implements AuthenticatableContract, CanResetPasswordContract, AuthorizableContract, Tokenable
 {
-    use Authenticatable, CanResetPassword, ModelFieldTrait, Authorizable, Tentacle;
+    use Authenticatable, CanResetPassword, ModelFieldTrait, Authorizable, Tentacle, HasApiTokens;
 
     /**
      * The database table used by the model.
