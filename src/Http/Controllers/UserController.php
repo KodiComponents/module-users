@@ -2,11 +2,11 @@
 
 namespace KodiCMS\Users\Http\Controllers;
 
+use KodiCMS\CMS\Http\Controllers\System\BackendController;
 use KodiCMS\Users\Http\Forms\CreateUserForm;
 use KodiCMS\Users\Http\Forms\UpdateUserForm;
 use KodiCMS\Users\Model\User;
 use KodiCMS\Users\Repository\UserRepository;
-use KodiCMS\CMS\Http\Controllers\System\BackendController;
 
 class UserController extends BackendController
 {
@@ -35,6 +35,13 @@ class UserController extends BackendController
             ) {
                 $this->allowedActions[] = $action;
             }
+        }
+    }
+
+    public function checkAccess($page)
+    {
+        if (! in_array($this->getCurrentAction(), $this->allowedActions)) {
+            parent::checkAccess($page);
         }
     }
 
