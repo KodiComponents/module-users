@@ -18,6 +18,8 @@ class RolesTableSeeder extends Seeder
         Role::truncate();
         Permission::truncate();
 
+        \DB::table('permission_role')->truncate();
+
         $roles = [
             [
                 'name' => 'login',

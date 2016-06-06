@@ -2,9 +2,9 @@
 
 namespace KodiCMS\Users\database\seeds;
 
-use KodiCMS\Users\Model\User;
 use Illuminate\Database\Seeder;
 use KodiCMS\Users\Model\Role;
+use KodiCMS\Users\Model\User;
 
 class UsersTableSeeder extends Seeder
 {
@@ -17,27 +17,28 @@ class UsersTableSeeder extends Seeder
     {
         User::truncate();
         \DB::table('user_meta')->truncate();
+        \DB::table('role_user')->truncate();
 
-        $roles = Role::get()->lists('id')->all();
+        $roles = Role::pluck('id')->all();
         $maxRolesToAttach = count($roles) > 4 ? 4 : count($roles);
 
         $faker = \Faker\Factory::create();
         $totalUsers = 5;
 
         $user = User::create([
-            'email'    => 'admin@site.com',
+            'email' => 'admin@site.com',
             'password' => 'password',
             'name' => 'admin',
-            'locale'   => 'ru',
+            'locale' => 'ru',
         ]);
 
-        $user->roles()->sync([1, 2, 3]);
+        $user->roles()->sync($roles);
 
         $user = User::create([
-            'email'    => 'admin_en@site.com',
+            'email' => 'admin_en@site.com',
             'password' => 'password',
             'name' => 'admin_en',
-            'locale'   => 'en',
+            'locale' => 'en',
         ]);
 
         $user->roles()->sync([1, 2, 3]);
@@ -58,10 +59,10 @@ class UsersTableSeeder extends Seeder
             $usedUsernames[] = $username;
 
             $user = User::create([
-                'email'    => $email,
+                'email' => $email,
                 'password' => 'password',
                 'name' => $username,
-                'locale'   => $faker->randomElement(['ru', 'en']),
+                'locale' => $faker->randomElement(['ru', 'en']),
             ]);
 
             $user->roles()->attach($faker->randomElements($roles, rand(1, $maxRolesToAttach)));
