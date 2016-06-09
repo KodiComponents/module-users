@@ -3,8 +3,11 @@
 namespace KodiCMS\Users\Providers;
 
 use Event;
+use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
 use KodiCMS\Support\ServiceProvider;
 use KodiCMS\Users\Console\Commands\DeleteExpiredReflinksCommand;
+use KodiCMS\Users\Events\UserRolesChanged;
+use KodiCMS\Users\Listeners\UserRolesChangedNotification;
 use KodiCMS\Users\Model\Permission;
 use KodiCMS\Users\Model\Role;
 use KodiCMS\Users\Model\User;
@@ -13,9 +16,13 @@ use KodiCMS\Users\Observers\UserObserver;
 
 class ModuleServiceProvider extends ServiceProvider
 {
-
-    public function boot()
+    /**
+     * @param DispatcherContract $events
+     */
+    public function boot(DispatcherContract $events)
     {
+        $events->listen(UserRolesChanged::class, UserRolesChangedNotification::class);
+        
         User::observe(new UserObserver);
         Role::observe(new RoleObserver);
 
@@ -63,7 +70,7 @@ class ModuleServiceProvider extends ServiceProvider
     protected function registerTokenRepository()
     {
         $this->app->singleton('reflink.tokens', function ($app) {
-            $key    = $app['config']['app.key'];
+            $key = $app['config']['app.key'];
             $expire = 60;
 
             return new \KodiCMS\Users\Reflinks\ReflinkTokenRepository($key, $expire);
@@ -148,6 +155,7 @@ class ModuleServiceProvider extends ServiceProvider
         $permissions = Permission::with('roles')->get();
 
         Permission::syncPermissions($permissions);
+
         return $permissions;
     }
 

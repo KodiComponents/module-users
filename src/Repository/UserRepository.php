@@ -2,8 +2,8 @@
 
 namespace KodiCMS\Users\Repository;
 
-use Illuminate\Http\Request;
 use KodiCMS\CMS\Repository\BaseRepository;
+use KodiCMS\Users\Events\UserRolesChanged;
 use KodiCMS\Users\Model\User;
 
 class UserRepository extends BaseRepository
@@ -57,6 +57,7 @@ class UserRepository extends BaseRepository
      */
     public function update($id, array $data = [])
     {
+        /** @var User $user */
         $user = parent::update($id, array_only($data, [
             'name',
             'password',
@@ -65,7 +66,9 @@ class UserRepository extends BaseRepository
         ]));
 
         if ($user->id > 1) {
-            $user->roles()->sync((array) array_get($data, 'roles', []));
+            $result = $user->roles()->sync((array) array_get($data, 'roles', []));
+
+            event(new UserRolesChanged($user, $result['attached'], $result['detached']));
         }
 
         return $user;
