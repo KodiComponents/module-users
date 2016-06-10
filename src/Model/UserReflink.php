@@ -2,10 +2,26 @@
 
 namespace KodiCMS\Users\Model;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Class UserReflink
+ * @package KodiCMS\Users\Model
+ *
+ * @property int $user_id
+ * @property string $handler
+ * @property string $token
+ * @property array $properties
+ *
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ *
+ * @property User $user
+ */
 class UserReflink extends Model
 {
+
     /**
      * The database table used by the model.
      *

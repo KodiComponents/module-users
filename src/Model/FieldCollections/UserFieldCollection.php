@@ -2,6 +2,7 @@
 
 namespace KodiCMS\Users\Model\FieldCollections;
 
+use KodiCMS\Support\Model\Fields\FileField;
 use KodiCMS\Support\Model\Fields\RelatedField;
 use UI;
 use KodiCMS\Support\Model\Fields\TextField;
@@ -27,6 +28,8 @@ class UserFieldCollection implements ModelFieldsInterface
             }),
             // Email
             (new EmailField('email'))->setTitle(trans('users::core.field.email'))->setSetting('append', UI::icon('envelope')),
+            // Avatar
+            (new FileField('avatar'))->setTitle(trans('users::core.field.avatar')),
             // Locale
             (new SelectField('locale', null, [
                 'callbackOptions' => [
@@ -40,7 +43,6 @@ class UserFieldCollection implements ModelFieldsInterface
             (new RelatedField('roles'))->setTitle(trans('users::core.field.roles'))->setSettings([
                 'helpText' => trans('users::core.rule.roles'),
             ]),
-
         ];
     }
 }

@@ -58,12 +58,7 @@ class UserRepository extends BaseRepository
     public function update($id, array $data = [])
     {
         /** @var User $user */
-        $user = parent::update($id, array_only($data, [
-            'name',
-            'password',
-            'email',
-            'locale',
-        ]));
+        $user = parent::update($id, $data);
 
         if ($user->id > 1) {
             $result = $user->roles()->sync((array) array_get($data, 'roles', []));

@@ -111,9 +111,8 @@ class UserController extends BackendController
         /** @var User $user */
         $user = $repository->findOrFail($id);
 
-        $this->setTitle(trans($this->wrapNamespace('core.title.edit'), [
-            'name' => $user->getName(),
-        ]));
+        $this->breadcrumbs->add($user->getName(), route('backend.user.profile', $id));
+        $this->setTitle(trans($this->wrapNamespace('core.title.edit')));
 
         $this->templateScripts['USER'] = $user;
 

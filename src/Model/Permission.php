@@ -2,6 +2,7 @@
 
 namespace KodiCMS\Users\Model;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,6 +18,11 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $group_label
  * @property string $key
  * @property string $action
+ *
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ *
+ * @property Role[]|Collection $roles
  */
 class Permission extends Model
 {

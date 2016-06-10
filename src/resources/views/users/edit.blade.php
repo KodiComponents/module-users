@@ -1,6 +1,7 @@
 {!! Form::model($user, [
 	'route' => ['backend.user.edit.post', $user],
-	'class' => 'form-horizontal panel tabbable'
+	'class' => 'form-horizontal panel tabbable',
+	'enctype' => 'multipart/form-data'
 ]) !!}
 <div class="panel-heading">
 	<span class="panel-title">@lang('users::core.tab.general')</span>
@@ -13,6 +14,18 @@
 	<hr class="panel-wide" />
 
 	{!! $user->renderField('locale') !!}
+
+
+	<hr class="panel-wide" />
+
+	{!! $user->renderField('avatar') !!}
+
+	@if($user->avatar)
+		<div class="col-md-9 col-md-offset-3">
+			{!! Html::image($user->avatar, null, ['class' => 'img-thumbnail img-responsive']) !!}
+			<br /><br />
+		</div>
+	@endif
 </div>
 
 @if (acl_check('user::change_password') or $user->id == backend_auth()->id())
@@ -25,7 +38,6 @@
 </div>
 
 <div class="panel-body">
-
 	{!! $user->renderField('password') !!}
 	{!! $user->renderField('password_confirmation') !!}
 

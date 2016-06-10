@@ -16,16 +16,35 @@ use KodiCMS\API\Contracts\Tokenable;
 use KodiCMS\API\Traits\HasApiTokens;
 use KodiCMS\Support\Helpers\Locale;
 use KodiCMS\Support\Model\ModelFieldTrait;
-use KodiCMS\Support\Traits\Tentacle;
 use KodiCMS\Users\Helpers\Gravatar;
 use KodiCMS\Users\Model\FieldCollections\UserFieldCollection;
+use KodiComponents\Support\Upload;
 
 /**
- * Class User.
+ * Class User
+ * @package KodiCMS\Users\Model
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property string $password
+ * @property string $remember_token
+ * @property string $locale
+ * @property string $avatar
+ * @property string $avatar_url
+ * @property string $avatar_path
+ * @property int $logins
+ * @property int $last_login
+ *
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ *
+ * @property UserReflink[]|Collection $reflinks
+ * @property Role[]|Collection $roles
  */
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract, AuthorizableContract, Tokenable
 {
-    use Authenticatable, CanResetPassword, ModelFieldTrait, Authorizable, Tentacle, HasApiTokens;
+    use Authenticatable, CanResetPassword, ModelFieldTrait, Authorizable, HasApiTokens, Upload;
 
     /**
      * The database table used by the model.
@@ -39,12 +58,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      *
      * @var array
      */
-    protected $fillable = [
-        'name',
-        'password',
-        'email',
-        'locale',
-    ];
+    protected $fillable = ['name', 'password', 'email', 'locale', 'avatar'];
 
     /**
      * The attributes that aren't mass assignable.
@@ -68,6 +82,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     protected $casts = [
         'logins' => 'integer',
         'last_login' => 'integer',
+        'avatar' => 'image'
     ];
 
     /**
@@ -77,6 +92,21 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     {
         parent::__construct($attributes);
         $this->addObservableEvents('authenticated');
+    }
+
+    /**
+     * @return array
+     */
+    public function getUploadSettings()
+    {
+        return [
+            'avatar' => [
+                'fit' => [300, 300, function ($constraint) {
+                    $constraint->upsize();
+                    $constraint->aspectRatio();
+                }],
+            ],
+        ];
     }
 
     /**
@@ -122,7 +152,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      */
     public function getAvailableLocales()
     {
-        $locales = Locale::getAvailable();
+        $locales       = Locale::getAvailable();
         $systemDefault = Locale::getSystemDefault();
 
         $locales[Locale::DEFAULT_LOCALE] = trans('users::core.field.default_locale', [
@@ -133,26 +163,28 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     }
 
     /**
-     * @param int   $size
+     * @param int $size
      * @param array $attributes
      *
      * @return string
      */
     public function getAvatar($size = 100, array $attributes = null)
     {
-        if (empty($this->avatar) or ! is_file(App::uploadPath().'avatars'.DIRECTORY_SEPARATOR.$this->avatar)) {
+        if (empty($this->avatar) or ! is_file($this->avatar_path)) {
             return $this->getGravatar($size, null, $attributes);
         }
 
-        return HTML::image(App::uploadURL().'/avatars/'.$this->avatar, null, $attributes);
+        $attributes['width'] = $size.'px';
+
+        return \HTML::image($this->avatar, null, $attributes);
     }
 
     /**
      * Получение аватара пользлователя из сервиса Gravatar.
      *
-     * @param int    $size
+     * @param int $size
      * @param string $default
-     * @param array  $attributes
+     * @param array $attributes
      *
      * @return string HTML::image
      */
@@ -169,14 +201,6 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         if (! empty($password)) {
             $this->attributes['password'] = bcrypt($password);
         }
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\hasMany
-     */
-    public function reflinks()
-    {
-        return $this->hasMany(UserReflink::class);
     }
 
     /**
@@ -204,6 +228,14 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     {
         $this->last_login = time();
         $this->save();
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\hasMany
+     */
+    public function reflinks()
+    {
+        return $this->hasMany(UserReflink::class);
     }
 
     /**

@@ -7,7 +7,7 @@ return [
         'profile_alternate' => 'Профиль пользователя :name',
         'settings' => 'Настройки',
         'permissions' => 'Права доступа',
-        'edit' => 'Редактирование пользователя :name',
+        'edit' => 'Редактирование',
         'create' => 'Создание пользователя',
         'theme' => 'Тема',
     ],
@@ -27,6 +27,7 @@ return [
         'default_locale' => 'Язык системы по умолчанию (:locale)',
         'roles' => 'Роли',
         'actions' => 'Действия',
+        'avatar' => 'Аватар',
         'auth' => [
             'name' => 'Логин или E-mail',
             'password' => 'Пароль',
