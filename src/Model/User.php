@@ -22,8 +22,8 @@ use KodiComponents\Support\Upload;
 
 /**
  * Class User
- * @package KodiCMS\Users\Model
  *
+ * @package KodiCMS\Users\Model
  * @property int $id
  * @property string $name
  * @property string $email
@@ -35,12 +35,22 @@ use KodiComponents\Support\Upload;
  * @property string $avatar_path
  * @property int $logins
  * @property int $last_login
- *
  * @property Carbon $created_at
  * @property Carbon $updated_at
- *
  * @property UserReflink[]|Collection $reflinks
  * @property Role[]|Collection $roles
+ * @property-read \Illuminate\Database\Eloquent\Collection|\KodiCMS\API\Model\Token[] $tokens
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\User whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\User whereName($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\User whereEmail($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\User wherePassword($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\User whereRememberToken($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\User whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\User whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\User whereLogins($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\User whereLastLogin($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\User whereLocale($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\User whereAvatar($value)
  */
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract, AuthorizableContract, Tokenable
 {

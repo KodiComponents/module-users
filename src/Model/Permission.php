@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Permission
- * @package KodiCMS\Users\Model
  *
+ * @package KodiCMS\Users\Model
  * @property int    $id
  * @property string $label
  * @property string $module_label
@@ -18,11 +18,15 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $group_label
  * @property string $key
  * @property string $action
- *
  * @property Carbon $created_at
  * @property Carbon $updated_at
- *
  * @property Role[]|Collection $roles
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\Permission whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\Permission whereModule($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\Permission whereGroup($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\Permission whereAction($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\Permission whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\Permission whereUpdatedAt($value)
  */
 class Permission extends Model
 {

@@ -7,17 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class UserReflink
- * @package KodiCMS\Users\Model
  *
+ * @package KodiCMS\Users\Model
  * @property int $user_id
  * @property string $handler
  * @property string $token
  * @property array $properties
- *
  * @property Carbon $created_at
  * @property Carbon $updated_at
- *
  * @property User $user
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\UserReflink whereUserId($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\UserReflink whereHandler($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\UserReflink whereToken($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\UserReflink whereProperties($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\UserReflink whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\UserReflink whereUpdatedAt($value)
  */
 class UserReflink extends Model
 {

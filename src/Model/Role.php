@@ -8,17 +8,20 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Role
- * @package KodiCMS\Users\Model
  *
+ * @package KodiCMS\Users\Model
  * @property int $id
  * @property string name
  * @property string $label
- *
  * @property Carbon $created_at
  * @property Carbon $updated_at
- *
  * @property Permission[]|Collection $permissions
  * @property User[]|Collection $users
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\Role whereId($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\Role whereName($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\Role whereLabel($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\Role whereCreatedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|\KodiCMS\Users\Model\Role whereUpdatedAt($value)
  */
 class Role extends Model
 {
